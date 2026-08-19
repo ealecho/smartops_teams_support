@@ -1,0 +1,1 @@
+recursive-include smartops_teams_support *.css *.html *.js *.json *.md *.py *.txt

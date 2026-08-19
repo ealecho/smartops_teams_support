@@ -1,0 +1,108 @@
+{
+ "doctype": "DocType",
+ "name": "SmartOps Teams Support Settings",
+ "module": "SmartOps Teams Support",
+ "issingle": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "microsoft_section",
+  "tenant_id",
+  "client_id",
+  "client_secret",
+  "refresh_token",
+  "connected_user_id",
+  "connected_user_name",
+  "webhook_secret",
+  "fallback_requester",
+  "channels_section",
+  "channels"
+ ],
+ "fields": [
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "default": "0"
+  },
+  {
+   "fieldname": "microsoft_section",
+   "fieldtype": "Section Break",
+   "label": "Microsoft Entra"
+  },
+  {
+   "fieldname": "tenant_id",
+   "fieldtype": "Data",
+   "label": "Tenant ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "client_id",
+   "fieldtype": "Data",
+   "label": "Client ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "client_secret",
+   "fieldtype": "Password",
+   "label": "Client Secret",
+   "reqd": 1
+  },
+  {
+   "fieldname": "refresh_token",
+   "fieldtype": "Password",
+   "label": "Refresh Token",
+   "hidden": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "connected_user_id",
+   "fieldtype": "Data",
+   "label": "Connected User ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "connected_user_name",
+   "fieldtype": "Data",
+   "label": "Connected Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "webhook_secret",
+   "fieldtype": "Password",
+   "label": "Webhook Secret",
+   "hidden": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "fallback_requester",
+   "fieldtype": "Data",
+   "label": "Fallback Requester Email",
+   "options": "Email",
+   "reqd": 1
+  },
+  {
+   "fieldname": "channels_section",
+   "fieldtype": "Section Break",
+   "label": "Support Channels"
+  },
+  {
+   "fieldname": "channels",
+   "fieldtype": "Table",
+   "label": "Channels",
+   "options": "SmartOps Teams Channel"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

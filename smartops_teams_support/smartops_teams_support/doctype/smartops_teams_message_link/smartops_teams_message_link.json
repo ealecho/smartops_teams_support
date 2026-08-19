@@ -1,0 +1,33 @@
+{
+ "doctype": "DocType",
+ "name": "SmartOps Teams Message Link",
+ "module": "SmartOps Teams Support",
+ "engine": "InnoDB",
+ "field_order": [
+  "team_id",
+  "channel_id",
+  "message_id",
+  "root_message_id",
+  "ticket",
+  "communication",
+  "direction",
+  "status",
+  "error"
+ ],
+ "fields": [
+  {"fieldname": "team_id", "fieldtype": "Data", "label": "Team ID", "reqd": 1},
+  {"fieldname": "channel_id", "fieldtype": "Data", "label": "Channel ID", "reqd": 1},
+  {"fieldname": "message_id", "fieldtype": "Data", "label": "Message ID", "reqd": 1},
+  {"fieldname": "root_message_id", "fieldtype": "Data", "label": "Root Message ID", "reqd": 1},
+  {"fieldname": "ticket", "fieldtype": "Link", "label": "Ticket", "options": "HD Ticket", "reqd": 1},
+  {"fieldname": "communication", "fieldtype": "Link", "label": "Communication", "options": "Communication"},
+  {"fieldname": "direction", "fieldtype": "Select", "label": "Direction", "options": "Inbound\nOutbound", "reqd": 1},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Pending\nSent\nFailed", "reqd": 1},
+  {"fieldname": "error", "fieldtype": "Small Text", "label": "Error", "read_only": 1}
+ ],
+ "permissions": [
+  {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
