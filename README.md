@@ -12,8 +12,10 @@ The app runs entirely inside Frappe: webhooks use whitelisted methods, work is q
 
 ## Install
 
+For the complete Frappe Cloud and Microsoft Entra walkthrough, testing steps, and troubleshooting guide, see [Setup tutorial](docs/setup-tutorial.md).
+
 ```bash
-bench get-app https://github.com/erpchampions/smartops_teams_support
+bench get-app https://github.com/ealecho/smartops_teams_support
 bench --site <site> install-app smartops_teams_support
 bench --site <site> migrate
 ```
