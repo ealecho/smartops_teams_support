@@ -46,6 +46,8 @@ def oauth_callback(code: str | None = None, state: str | None = None, error: str
             "connected_user_name",
             profile.get("displayName") or profile.get("userPrincipalName"),
         )
+        # OAuth redirects here with GET, which Frappe does not auto-commit.
+        frappe.db.commit()
     except Exception as exc:
         frappe.db.rollback()
         frappe.cache().delete_value(graph.TOKEN_CACHE_KEY)
