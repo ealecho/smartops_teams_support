@@ -42,6 +42,7 @@ def install():
                     "label": "Teams Thread",
                     "fieldtype": "Data",
                     "options": "URL",
+                    "length": 1000,
                     "read_only": 1,
                     "insert_after": "teams_root_message_id",
                 },
