@@ -1,10 +1,12 @@
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from urllib.parse import quote, urlencode
 
 import frappe
 import requests
-from frappe.utils import add_to_date, get_datetime, get_url, now_datetime
+from frappe.utils import get_datetime, get_url, now_datetime
+
+from smartops_teams_support.utils import subscription_expiration
 
 GRAPH = "https://graph.microsoft.com/v1.0"
 SCOPES = (
@@ -171,8 +173,7 @@ def reply(team_id: str, channel_id: str, root_message_id: str, content: str):
 
 
 def subscribe(team_id: str, channel_id: str, subscription_id: str | None = None):
-    expires = add_to_date(now_datetime(), days=2, hours=23, as_datetime=True)
-    payload = {"expirationDateTime": expires.isoformat() + "Z"}
+    payload = {"expirationDateTime": subscription_expiration(datetime.now(timezone.utc))}
     if subscription_id:
         data = request("PATCH", f"/subscriptions/{subscription_id}", json=payload)
     else:

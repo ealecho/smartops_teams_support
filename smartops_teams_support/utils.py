@@ -1,10 +1,15 @@
 import html
 import re
+from datetime import timedelta
 from html.parser import HTMLParser
 
 RESOURCE_RE = re.compile(
     r"teams(?:\('([^']+)'\)|/([^/]+))/channels(?:\('([^']+)'\)|/([^/]+))/messages(?:\('([^']+)'\)|/([^/]+))"
 )
+
+
+def subscription_expiration(now):
+    return (now + timedelta(minutes=55)).isoformat().replace("+00:00", "Z")
 
 
 class _Text(HTMLParser):

@@ -15,5 +15,5 @@ override_doctype_class = {
 }
 
 scheduler_events = {
-    "hourly": ["smartops_teams_support.graph.ensure_subscriptions"],
+    "cron": {"*/30 * * * *": ["smartops_teams_support.graph.ensure_subscriptions"]},
 }
