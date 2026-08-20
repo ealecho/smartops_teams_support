@@ -192,13 +192,18 @@ def process_notification(item: dict, settings_doc):
 
 
 def process_notifications(items: list[dict]):
-    settings_doc = frappe.get_single(SETTINGS_DOCTYPE)
-    if not settings_doc.enabled:
-        return
-    for item in items:
-        try:
-            process_notification(item, settings_doc)
-            frappe.db.commit()
-        except Exception:
-            frappe.db.rollback()
-            frappe.log_error(title="Teams notification processing failed")
+    previous_user = frappe.session.user or "Guest"
+    frappe.set_user("Administrator")
+    try:
+        settings_doc = frappe.get_single(SETTINGS_DOCTYPE)
+        if not settings_doc.enabled:
+            return
+        for item in items:
+            try:
+                process_notification(item, settings_doc)
+                frappe.db.commit()
+            except Exception:
+                frappe.db.rollback()
+                frappe.log_error(title="Teams notification processing failed")
+    finally:
+        frappe.set_user(previous_user)
