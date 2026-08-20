@@ -27,6 +27,8 @@ Add these delegated Microsoft Graph permissions and grant admin consent:
 - `ChannelMessage.Read.All`
 - `ChannelMessage.Send`
 - `User.ReadBasic.All`
+- `Team.ReadBasic.All`
+- `Channel.ReadBasic.All`
 - `User.Read`
 - `offline_access`
 
@@ -37,7 +39,7 @@ Redirect URI: <site-url>/api/method/smartops_teams_support.api.oauth_callback
 Webhook URL:  <site-url>/api/method/smartops_teams_support.api.graph_webhook
 ```
 
-Open **SmartOps Teams Support Settings**, enter the Entra credentials and channel mappings, save, then use **Connect Microsoft Account**. After connection, use **Sync Subscriptions**.
+Open **SmartOps Teams Support Settings**, enter the Entra credentials, save, then use **Connect Microsoft Account**. After connection, use **Fetch Support Channels** to add mappings and **Sync Subscriptions**.
 
 ## Scope
 

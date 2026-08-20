@@ -7,7 +7,10 @@ import requests
 from frappe.utils import add_to_date, get_datetime, get_url, now_datetime
 
 GRAPH = "https://graph.microsoft.com/v1.0"
-SCOPES = "offline_access User.Read User.ReadBasic.All ChannelMessage.Read.All ChannelMessage.Send"
+SCOPES = (
+    "offline_access User.Read User.ReadBasic.All Team.ReadBasic.All "
+    "Channel.ReadBasic.All ChannelMessage.Read.All ChannelMessage.Send"
+)
 TOKEN_CACHE_KEY = "smartops_teams_support_access_token"
 SETTINGS_DOCTYPE = "SmartOps Teams Support Settings"
 
@@ -126,6 +129,17 @@ def request(method: str, path: str, **kwargs):
 
 def me():
     return request("GET", "/me?$select=id,displayName,mail,userPrincipalName")
+
+
+def joined_teams():
+    return request("GET", "/me/joinedTeams?$select=id,displayName").get("value", [])
+
+
+def team_channels(team_id: str):
+    return request(
+        "GET",
+        f"/teams/{quote(team_id, safe='')}/channels?$select=id,displayName,membershipType",
+    ).get("value", [])
 
 
 def user(user_id: str):

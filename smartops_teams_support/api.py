@@ -56,6 +56,20 @@ def sync_subscriptions():
     )
 
 
+@frappe.whitelist()
+def get_joined_teams():
+    frappe.only_for("System Manager")
+    return graph.joined_teams()
+
+
+@frappe.whitelist()
+def get_team_channels(team_id: str):
+    frappe.only_for("System Manager")
+    if not team_id:
+        frappe.throw("Team is required")
+    return graph.team_channels(team_id)
+
+
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 def graph_webhook():
     validation_token = frappe.form_dict.get("validationToken")
