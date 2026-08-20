@@ -5,6 +5,7 @@ from urllib.parse import quote, urlencode
 import frappe
 import requests
 from frappe.utils import get_datetime, get_url, now_datetime
+from frappe.utils.password import set_encrypted_password
 
 from smartops_teams_support.utils import subscription_expiration
 
@@ -79,9 +80,11 @@ def exchange_code(code: str, verifier: str):
 
 
 def save_tokens(doc, payload: dict):
-    if payload.get("refresh_token"):
-        doc.refresh_token = payload["refresh_token"]
-        doc.save(ignore_permissions=True)
+    refresh_token = payload.get("refresh_token")
+    if refresh_token:
+        set_encrypted_password(doc.doctype, doc.name, refresh_token, "refresh_token")
+    elif not doc.get_password("refresh_token", raise_exception=False):
+        frappe.throw("Microsoft did not return a refresh token. Reconnect with offline_access consent")
     frappe.cache().set_value(
         TOKEN_CACHE_KEY,
         payload["access_token"],

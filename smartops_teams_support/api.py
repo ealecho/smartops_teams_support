@@ -40,11 +40,15 @@ def oauth_callback(code: str | None = None, state: str | None = None, error: str
     try:
         graph.exchange_code(code, values["verifier"])
         profile = graph.me()
-        doc = frappe.get_single("SmartOps Teams Support Settings")
-        doc.connected_user_id = profile["id"]
-        doc.connected_user_name = profile.get("displayName") or profile.get("userPrincipalName")
-        doc.save(ignore_permissions=True)
+        frappe.db.set_single_value("SmartOps Teams Support Settings", "connected_user_id", profile["id"])
+        frappe.db.set_single_value(
+            "SmartOps Teams Support Settings",
+            "connected_user_name",
+            profile.get("displayName") or profile.get("userPrincipalName"),
+        )
     except Exception as exc:
+        frappe.db.rollback()
+        frappe.cache().delete_value(graph.TOKEN_CACHE_KEY)
         graph.log_microsoft_error("Microsoft account connection failed", exc)
         frappe.respond_as_web_page(
             "Microsoft connection failed",
