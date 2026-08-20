@@ -4,7 +4,7 @@ from urllib.parse import quote, urlencode
 
 import frappe
 import requests
-from frappe.utils import get_datetime, get_url, now_datetime
+from frappe.utils import convert_utc_to_system_timezone, get_datetime, get_url, now_datetime
 from frappe.utils.password import set_encrypted_password
 
 from smartops_teams_support.utils import subscription_expiration
@@ -200,7 +200,10 @@ def subscribe(team_id: str, channel_id: str, subscription_id: str | None = None)
             }
         )
         data = request("POST", "/subscriptions", json=payload)
-    return data["id"], data["expirationDateTime"]
+    expiry = convert_utc_to_system_timezone(get_datetime(data["expirationDateTime"])).replace(
+        tzinfo=None
+    )
+    return data["id"], expiry
 
 
 def ensure_subscriptions():
