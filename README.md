@@ -41,6 +41,8 @@ Webhook URL:  <site-url>/api/method/smartops_teams_support.api.graph_webhook
 
 Open **SmartOps Teams Support Settings**, enter the Entra credentials, save, then use **Connect Microsoft Account**. After connection, use **Fetch Support Channels** to add mappings and **Sync Subscriptions**.
 
+Connecting is normally a one-time step; the stored refresh token maintains access. Reconnect only when the settings indicator turns red, Microsoft consent is revoked, or tenant credential policy requires it. OAuth, connection-check, and subscription failures are recorded in Frappe **Error Log** without credentials.
+
 ## Scope
 
 V1 synchronizes new text/HTML threads, replies, and edits. It does not import history or synchronize attachments, reactions, cards, deletions, or ticket status.

@@ -2,6 +2,19 @@ frappe.ui.form.on("SmartOps Teams Support Settings", {
   refresh(frm) {
     if (frm.is_new()) return;
 
+    frappe
+      .call("smartops_teams_support.api.get_connection_status")
+      .then(({ message }) => {
+        if (message.connected) {
+          frm.set_intro(
+            __("Microsoft connected and verified as {0}", [message.account]),
+            "green"
+          );
+        } else {
+          frm.set_intro(__("Microsoft not connected: {0}", [message.message]), "red");
+        }
+      });
+
     frm.add_custom_button(__("Connect Microsoft Account"), async () => {
       const result = await frappe.call("smartops_teams_support.api.get_authorization_url");
       window.location.assign(result.message);

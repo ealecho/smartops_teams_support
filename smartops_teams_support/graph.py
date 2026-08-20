@@ -21,6 +21,14 @@ def settings():
     return frappe.get_single(SETTINGS_DOCTYPE)
 
 
+def log_microsoft_error(title: str, exc: Exception):
+    response = getattr(exc, "response", None)
+    details = frappe.get_traceback()
+    if response is not None:
+        details += f"\n\nMicrosoft HTTP {response.status_code}: {response.text[:2000]}"
+    frappe.log_error(message=details, title=title)
+
+
 def redirect_uri():
     return get_url("/api/method/smartops_teams_support.api.oauth_callback")
 
@@ -209,12 +217,16 @@ def ensure_subscriptions():
             )
         except requests.HTTPError as exc:
             if channel.subscription_id and exc.response is not None and exc.response.status_code == 404:
-                subscription_id, expiry = subscribe(channel.team_id, channel.channel_id)
+                try:
+                    subscription_id, expiry = subscribe(channel.team_id, channel.channel_id)
+                except Exception as retry_exc:
+                    log_microsoft_error(f"Teams subscription failed: {channel.channel_id}", retry_exc)
+                    continue
             else:
-                frappe.log_error(title=f"Teams subscription failed: {channel.channel_id}")
+                log_microsoft_error(f"Teams subscription failed: {channel.channel_id}", exc)
                 continue
-        except Exception:
-            frappe.log_error(title=f"Teams subscription failed: {channel.channel_id}")
+        except Exception as exc:
+            log_microsoft_error(f"Teams subscription failed: {channel.channel_id}", exc)
             continue
         frappe.db.set_value(
             channel.doctype,

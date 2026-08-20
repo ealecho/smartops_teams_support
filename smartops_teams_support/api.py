@@ -37,23 +37,53 @@ def oauth_callback(code: str | None = None, state: str | None = None, error: str
         frappe.respond_as_web_page("Microsoft connection failed", "The request is invalid or expired")
         return
     values = json.loads(cached.decode() if isinstance(cached, bytes) else cached)
-    graph.exchange_code(code, values["verifier"])
-    profile = graph.me()
-    doc = frappe.get_single("SmartOps Teams Support Settings")
-    doc.connected_user_id = profile["id"]
-    doc.connected_user_name = profile.get("displayName") or profile.get("userPrincipalName")
-    doc.save(ignore_permissions=True)
+    try:
+        graph.exchange_code(code, values["verifier"])
+        profile = graph.me()
+        doc = frappe.get_single("SmartOps Teams Support Settings")
+        doc.connected_user_id = profile["id"]
+        doc.connected_user_name = profile.get("displayName") or profile.get("userPrincipalName")
+        doc.save(ignore_permissions=True)
+    except Exception as exc:
+        graph.log_microsoft_error("Microsoft account connection failed", exc)
+        frappe.respond_as_web_page(
+            "Microsoft connection failed",
+            "The error was recorded in Frappe Error Log. Return to SmartOps settings and try again.",
+        )
+        return
     frappe.respond_as_web_page("Microsoft account connected", "You can close this window.", success=True)
 
 
 @frappe.whitelist()
 def sync_subscriptions():
     frappe.only_for("System Manager")
+    doc = frappe.get_single("SmartOps Teams Support Settings")
+    if not doc.enabled:
+        frappe.throw("Enable SmartOps Teams Support before syncing subscriptions")
+    if not doc.get_password("refresh_token", raise_exception=False):
+        frappe.throw("Microsoft is not connected. Use Connect Microsoft Account first")
     frappe.enqueue(
         "smartops_teams_support.graph.ensure_subscriptions",
         queue="short",
         enqueue_after_commit=True,
     )
+
+
+@frappe.whitelist()
+def get_connection_status():
+    frappe.only_for("System Manager")
+    doc = frappe.get_single("SmartOps Teams Support Settings")
+    if not doc.get_password("refresh_token", raise_exception=False):
+        return {"connected": False, "message": "No Microsoft refresh token is stored"}
+    try:
+        profile = graph.me()
+    except Exception as exc:
+        graph.log_microsoft_error("Microsoft connection check failed", exc)
+        return {"connected": False, "message": "Microsoft rejected the saved connection"}
+    return {
+        "connected": True,
+        "account": profile.get("displayName") or profile.get("userPrincipalName"),
+    }
 
 
 @frappe.whitelist()
